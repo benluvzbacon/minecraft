@@ -49,6 +49,44 @@ ok(game.world.loadedCount() >= 25, 'chunk meshes built: ' + game.world.loadedCou
 ok(game.player.y > 1 && game.player.y < 80, 'player y sane: ' + game.player.y.toFixed(2));
 ok(game.player.onGround, 'player settled on ground');
 
+section('movement follows view');
+// Fly (no gravity/collision) and check W/A/S/D match the camera heading at
+// several yaws — catches wish-direction math that doesn't match camera yaw.
+{
+  const baseX = game.player.x, baseZ = game.player.z;
+  game.player.flying = true;
+  game.player.y = 60;
+  game.player.pitch = 0;
+  const yaws = [0, Math.PI / 2, Math.PI, -Math.PI / 3, 2.5, -2.9];
+  const dirs = [
+    ['KeyW', 1, 'forward'], ['KeyS', -1, 'back'], ['KeyD', 1, 'right'], ['KeyA', -1, 'left'],
+  ];
+  for (const yaw of yaws) {
+    game.player.yaw = yaw;
+    game.player.updateCamera();
+    const f = { x: game.player.look.x, z: game.player.look.z };
+    const r = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+    for (const [key, sign, name] of dirs) {
+      game.player.x = baseX; game.player.z = baseZ;
+      game.player.vx = game.player.vz = 0;
+      game.player.keys.add(key);
+      for (let i = 0; i < 20; i++) dom.pump(16.7);
+      game.player.keys.delete(key);
+      const dx = game.player.x - baseX, dz = game.player.z - baseZ;
+      const len = Math.hypot(dx, dz);
+      const basis = name === 'forward' || name === 'back' ? f : r;
+      const expect = name === 'back' || name === 'left' ? -1 : 1;
+      const dot = len > 0.1 ? (dx / len) * basis.x * expect + (dz / len) * basis.z * expect : -1;
+      ok(dot > 0.98, `${name} matches view at yaw ${yaw.toFixed(2)} (dot ${dot.toFixed(3)})`);
+    }
+  }
+  game.player.flying = false;
+  game.player.vx = game.player.vz = game.player.vy = 0;
+  game.player.respawn();
+  for (let i = 0; i < 120; i++) dom.pump(16.7);
+  ok(game.player.onGround, 'player re-settled on ground');
+}
+
 section('movement + interaction');
 const startX = game.player.x, startZ = game.player.z;
 game.player.keys.add('KeyW');

@@ -255,8 +255,11 @@ export class Player {
     }
     const sin = Math.sin(this.yaw);
     const cos = Math.cos(this.yaw);
-    const wishX = ix * cos - iz * sin;
-    const wishZ = ix * sin + iz * cos;
+    // Camera yaw basis (three.js, rotation.y = yaw, default facing -Z):
+    //   horizontal forward = (-sin, -cos), horizontal right = (cos, -sin)
+    // W sets iz = -1 (forward), S iz = +1, D ix = +1 (right), A ix = -1.
+    const wishX = ix * cos + iz * sin;
+    const wishZ = iz * cos - ix * sin;
     this.vx = wishX * speed;
     this.vz = wishZ * speed;
 
