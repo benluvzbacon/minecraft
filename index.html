@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voxel World</title>
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect fill='%235aae3a' width='16' height='16'/><rect fill='%238a5a32' y='10' width='16' height='6'/></svg>" />
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <div id="hurt-vignette"></div>
+  <div id="ui">
+    <div id="hud" class="hidden">
+      <div id="crosshair"></div>
+      <div id="break-bar" class="hidden"><div id="break-bar-fill"></div></div>
+      <div id="held-name"></div>
+      <div id="status">
+        <div id="hearts"></div>
+        <div id="hunger"></div>
+      </div>
+      <div id="hotbar"></div>
+      <pre id="debug" class="hidden"></pre>
+      <div id="message" class="hidden"></div>
+      <div id="hint">F3 debug · E inventory · Esc pause · Hold RMB to look if mouse lock fails</div>
+    </div>
+
+    <div id="cursor-item" class="slot hidden"></div>
+
+    <div id="title-screen" class="screen">
+      <div class="menu-panel">
+        <div class="logo">
+          <h1>VOXEL WORLD</h1>
+          <p class="subtitle">A sandbox of cubes</p>
+        </div>
+        <button id="btn-new" class="btn">New World</button>
+        <button id="btn-load" class="btn">Load World</button>
+        <button id="btn-settings" class="btn">Settings</button>
+        <p class="footer-note">WASD move · Space jump · Mouse look · Left break · Right place</p>
+      </div>
+    </div>
+
+    <div id="new-world-screen" class="screen hidden">
+      <div class="menu-panel">
+        <h2>Create World</h2>
+        <label>World name<input id="world-name" type="text" maxlength="32" /></label>
+        <label>Seed <span class="muted">(blank = random)</span><input id="world-seed" type="text" placeholder="random" /></label>
+        <button id="btn-create-world" class="btn primary">Create &amp; Play</button>
+        <button id="btn-new-cancel" class="btn">Cancel</button>
+      </div>
+    </div>
+
+    <div id="load-world-screen" class="screen hidden">
+      <div class="menu-panel wide">
+        <h2>Load World</h2>
+        <div id="world-list"></div>
+        <button id="btn-load-back" class="btn">Back</button>
+      </div>
+    </div>
+
+    <div id="settings-screen" class="screen hidden">
+      <div class="menu-panel">
+        <h2>Settings</h2>
+        <label>Mouse sensitivity<input id="set-sens" type="range" min="0.0006" max="0.006" step="0.0001" /></label>
+        <label>Render distance<input id="set-rd" type="range" min="2" max="8" step="1" /></label>
+        <label>Field of view<input id="set-fov" type="range" min="50" max="100" step="1" /></label>
+        <label>Graphics
+          <select id="set-quality">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High (shadows)</option>
+          </select>
+        </label>
+        <label>Volume<input id="set-vol" type="range" min="0" max="1" step="0.05" /></label>
+        <label class="row"><input id="set-inverty" type="checkbox" /> Invert Y look</label>
+        <button id="btn-settings-back" class="btn primary">Save</button>
+      </div>
+    </div>
+
+    <div id="pause-screen" class="screen hidden">
+      <div class="menu-panel">
+        <h2>Paused</h2>
+        <button id="btn-resume" class="btn primary">Resume</button>
+        <button id="btn-save" class="btn">Save World</button>
+        <button id="btn-pause-settings" class="btn">Settings</button>
+        <button id="btn-quit-menu" class="btn">Quit to Menu</button>
+      </div>
+    </div>
+
+    <div id="inventory-screen" class="screen hidden dim">
+      <div class="inv-panel">
+        <h2>Inventory</h2>
+        <div class="inv-body">
+          <div>
+            <div id="inv-grid" class="slot-grid cols-9"></div>
+            <div id="inv-hotbar" class="slot-grid cols-9 hot-row"></div>
+          </div>
+          <div class="craft-wrap">
+            <div class="muted">Crafting</div>
+            <div id="craft-grid" class="slot-grid cols-3"></div>
+            <div class="craft-arrow">→</div>
+            <div id="craft-result" class="slot result"></div>
+            <p class="muted tiny">Wood → planks · planks → sticks · sticks + planks → tools</p>
+          </div>
+        </div>
+        <p class="muted tiny">Click to pick up / place · Right click to split · Esc or E to close</p>
+      </div>
+    </div>
+
+    <div id="death-screen" class="screen hidden">
+      <div class="menu-panel">
+        <h2>You Died</h2>
+        <button id="btn-respawn" class="btn primary">Respawn</button>
+        <button id="btn-death-quit" class="btn">Title Screen</button>
+      </div>
+    </div>
+
+    <div id="loading-screen" class="screen hidden">
+      <div class="menu-panel">
+        <h2>Generating world…</h2>
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
