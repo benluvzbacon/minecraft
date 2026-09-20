@@ -45,6 +45,14 @@ Unit tests (world gen, inventory, crafting, saves):
 npm test
 ```
 
+Headless smoke test (boots the real game with a stubbed DOM/renderer, walks,
+breaks/places blocks, saves and reloads — catches runtime errors the unit
+tests can't reach):
+
+```bash
+npm run smoke
+```
+
 ## Controls
 
 | Input | Action |

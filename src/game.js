@@ -245,7 +245,6 @@ export class Game {
     this.worldName = data.name || 'World';
     this.inventory = new Inventory();
     if (data.inventory) this.inventory.deserialize(data.inventory);
-    else this.giveStarterItems();
 
     this.world = new World(data.seed, this.scene, this.materials);
     this.world.renderDistance = this.settings.renderDistance;
@@ -290,14 +289,6 @@ export class Game {
     this.ui.toast('Welcome to ' + this.worldName);
     this.requestLock();
     this.save(false);
-  }
-
-  giveStarterItems() {
-    this.inventory.add(ID.PLANKS, 16);
-    this.inventory.add(ID.LOG, 8);
-    this.inventory.add(ID.DIRT, 16);
-    this.inventory.add(ID.COBBLE, 8);
-    this.inventory.add(ID.BERRIES, 8);
   }
 
   settlePlayer() {
@@ -482,21 +473,26 @@ export class Game {
   }
 
   loop(now) {
-    const dt = Math.min(0.05, (now - this.last) / 1000);
-    this.last = now;
-    this.frames++;
-    this.fpsT += dt;
-    if (this.fpsT >= 0.5) {
-      this.fps = Math.round(this.frames / this.fpsT);
-      this.frames = 0;
-      this.fpsT = 0;
-    }
+    try {
+      const dt = Math.min(0.05, (now - this.last) / 1000);
+      this.last = now;
+      this.frames++;
+      this.fpsT += dt;
+      if (this.fpsT >= 0.5) {
+        this.fps = Math.round(this.frames / this.fpsT);
+        this.frames = 0;
+        this.fpsT = 0;
+      }
 
-    if (this.state === 'playing' || this.state === 'paused' || this.state === 'inventory' || this.state === 'dead') {
-      this.tick(dt);
+      if (this.state === 'playing' || this.state === 'paused' || this.state === 'inventory' || this.state === 'dead') {
+        this.tick(dt);
+      }
+      if (this.world) this.renderer.render(this.scene, this.camera);
+      this.ui.update(dt);
+    } catch (err) {
+      console.error('Frame error:', err);
+      this.ui.toast('Error: ' + (err?.message || err), 4);
     }
-    if (this.world) this.renderer.render(this.scene, this.camera);
-    this.ui.update(dt);
     requestAnimationFrame(this.loop);
   }
 

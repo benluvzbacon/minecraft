@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 5173",
     "test": "node tests/run.mjs",
+    "smoke": "node --import ./tests/register.mjs tests/smoke.mjs",
     "start": "vite --host 0.0.0.0 --port 5173"
   },
   "dependencies": {

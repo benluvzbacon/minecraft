@@ -201,6 +201,18 @@ export class World {
     }
   }
 
+  invalidateNeighbors(cx, cz) {
+    // A newly generated chunk can expose/cull faces on adjacent, already
+    // meshed chunks — mark them dirty so borders remesh correctly.
+    for (let dz = -1; dz <= 1; dz++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dz) continue;
+        const n = this.chunks.get(chunkKey(cx + dx, cz + dz));
+        if (n && n.generated && (n.mesh || n.waterMesh)) n.dirty = true;
+      }
+    }
+  }
+
   buildMesh(chunk) {
     this.unloadMesh(chunk);
     const raw = meshChunk(chunk, this);
